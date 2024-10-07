@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Nuno A4</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 36px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 60px;
+      background-color: #fafafa;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    }
+
+    form label {
+      flex-basis: 100%;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    form input[type="text"],
+    form input[type="number"] {
+      flex-basis: 100%;
+      padding: 10px;
+      font-size: 16px;
+      color: #333;
+      border-radius: 4px;
+      border: none;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+
+    input[type="color"] {
+      height: 40px;
+      width: 10%;
+    }
+
+    form button {
+      margin-left: auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .3s ease;
+    }
+
+    form button:hover {
+      background-color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+      margin-bottom: 20px;
+    }
+
+    table th,
+    table td {
+      padding: 40px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      font-size: 16px;
+      color: #333;
+      vertical-align: middle;
+    }
+
+    table th {
+      background-color: #333;
+      color: #fff;
+    }
+
+    table td:nth-child(4),
+    table td:nth-child(5),
+    table td:nth-child(6) {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70px;
+      background-color: #0e0d0d;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li {
+      margin: 0 20px;
+    }
+
+    nav ul li a {
+      display: inline-block;
+      color: #f0dede;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 26px;
+      padding: 10px 20px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    nav ul li a:hover {
+      background-color: #7d2727;
+      transform: scale(1.2);
+    }
+
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Function to update the table with data from the database
+      function updateTable() {
+        $.ajax({
+          url: '/get-elements',
+          type: 'GET',
+          dataType: 'json',
+          success: function (data) {
+            // Clear the table body
+            $('#element-list').empty();
+            // Loop through the data and add rows to the table
+            $.each(data, function (index, element) {
+              var row = '<tr><td>' + element.ELEMENT_NO + '</td><td>' + element.ELEMENT_CODE + '</td><td>' +
+                element.ELEMENT_NAME + '</td><td>' + element.COLOUR1 + '</td><td>' + element.COLOUR2 +
+                '</td><td>' + element.COLOUR3 + '</td><td>' + element.RADIUS + '</td><td><button class="delete" data-element-Name="' +
+                element.ELEMENT_NAME + '">Delete</button></td></tr>';
+              $('#element-list').append(row);
+            });
+          },
+          error: function (data) {
+            console.log('Error getting elements');
+          }
+        });
+      }
+      updateTable();
+
+      // Function to add an element to the database
+      $('form').submit(function (event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+        formData = formData.replace(/%23/g, ''); // Removes the # 
+        $.ajax({
+          url: '/add-element',
+          type: 'POST',
+          data: formData,
+          success: function (data) {
+            alert('Element added to database');
+            updateTable();
+          },
+          error: function (data) {
+            alert('Error adding element to database');
+          }
+        });
+      });
+
+      // Function to delete an element from the database
+      $('#element-list').on('click', '.delete', function (event) {
+        var elementName = $(this).data('element-name');
+        $.ajax({
+          url: '/delete-element/' + elementName,
+          type: 'DELETE',
+          success: function (data) {
+            alert('Element deleted from database');
+            updateTable();
+          },
+          error: function (data) {
+            alert('Error deleting element from database');
+          }
+        });
+      });
+    });
+  </script>
+
+
+</head>
+<nav>
+  <ul>
+    <li><a href="add-removeElements.html">Add/Remove Elements</a></li>
+    <li><a href="index.html">Home Page</a></li>
+    <li><a href="sdf-molecules.html">Upload SDF & View Molecules</a></li>
+  </ul>
+</nav>
+
+<body>
+  <h1>Nuno's Molecule Viewer</h1>
+
+  <form>
+    <label for="element-number">Element Number:</label>
+    <input type="text" id="element-number" name="element-number"><br>
+
+    <label for="element-code">Element Code:</label>
+    <input type="text" id="element-code" name="element-code" maxlength="3" onkeyup="this.value = this.value.toUpperCase();"><br>
+
+    <label for="element-name">Element Name:</label>
+    <input type="text" id="element-name" name="element-name" maxlength="32" onkeyup="this.value = this.value.toUpperCase();"><br>
+
+    <label for="color-1">Color 1:</label>
+    <input type="color" id="color-1" name="color-1"><br>
+
+    <label for="color-2">Color 2:</label>
+    <input type="color" id="color-2" name="color-2"><br>
+
+    <label for="color-3">Color 3:</label>
+    <input type="color" id="color-3" name="color-3"><br>
+
+    <label for="radius">Radius:</label>
+    <input type="number" id="radius" name="radius" min="0"><br>
+
+    <button type="submit">Add Element</button>
+
+  </form>
+
+  <br>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Element Number</th>
+        <th>Element Code</th>
+        <th>Element Name</th>
+        <th>Color 1</th>
+        <th>Color 2</th>
+        <th>Color 3</th>
+        <th>Radius</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody id="element-list">
+    </tbody>
+  </table>
+
+  <body>
+
+</html>

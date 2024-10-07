@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Nuno's Molecule Viewer</title>
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 36px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 60px;
+      background-color: #fafafa;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    }
+
+    form label {
+      flex-basis: 100%;
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    form input[type="file"] {
+      flex-basis: 100%;
+      padding: 10px;
+      font-size: 16px;
+      color: #333;
+      border-radius: 4px;
+      border: none;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+
+    form button {
+      margin-left: auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .3s ease;
+    }
+
+    form button:hover {
+      background-color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+      margin-bottom: 20px;
+    }
+
+    table th,
+    table td {
+      padding: 40px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      font-size: 16px;
+      color: #333;
+      vertical-align: middle;
+    }
+
+    table th {
+      background-color: #333;
+      color: #fff;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70px;
+      background-color: #0e0d0d;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li {
+      margin: 0 20px;
+    }
+
+    nav ul li a {
+      display: inline-block;
+      color: #f0dede;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 26px;
+      padding: 10px 20px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    nav ul li a:hover {
+      background-color: #7d2727;
+      transform: scale(1.2);
+    }
+
+
+    #molecule-table {
+      background-color: #ffffcc;
+      border: 1px solid black;
+    }
+
+    #molecule-table td:first-child {
+      font-size: 20px;
+    }
+
+    #molecule-table img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    form {
+      display: block;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #molecule-dropdown {
+      display: block;
+      margin: 0 auto;
+      text-align: center;
+      background-color: #c1bbba;
+    }
+
+    #molecule-dropdown {
+      width: 50%;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      color: #333;
+      border-radius: 4px;
+      border: none;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      box-sizing: border-box;
+    }
+
+    #remove-molecules-button {
+      display: block;
+      margin: 0 auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #f44336;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .3s ease;
+    }
+
+    #remove-molecules-button:hover {
+      background-color: #333;
+    }
+
+    label[for="molecule-dropdown"] {
+      padding: 10px 20px;
+      font-size: 16px;
+      display: block;
+      text-align: center;
+    }
+  </style>
+  <nav>
+    <ul>
+      <li><a href="add-removeElements.html">Add/Remove Elements</a></li>
+      <li><a href="index.html">Home Page</a></li>
+      <li><a href="sdf-molecules.html">Upload SDF & View Molecules</a></li>
+    </ul>
+  </nav>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+
+    $(document).ready(function () {
+      // Load existing molecules into dropdown menu
+      function loadMolecules() {
+        $.ajax({
+          url: '/get-molecules',
+          type: 'GET',
+          success: function (data) {
+            console.log(data);
+            var molecules = data
+            var options = '<option value="">- Please select a molecule -</option>';
+            for (var i = 0; i < molecules.length; i++) {
+              var name = molecules[i].name;
+              var numAtoms = molecules[i].num_atoms;
+              var numBonds = molecules[i].num_bonds;
+              options += '<option value="' + name + '">' + name + ' (' + numAtoms + ' atoms, ' + numBonds + ' bonds)</option>';
+            }
+            $('#molecule-dropdown').html(options);
+          },
+          error: function (data) {
+            console.log('Error getting molecules');
+          }
+        });
+      }
+
+      // This function validates the Molecules Name
+      function validateMoleculeName() {
+        var moleculeName = $("#molecule-name").val();
+        if (moleculeName.includes(' ')) {
+          alert("Molecule name cannot cotain any spaces")
+          return false;
+        }
+        // Check if molecule name already exists
+        var existingMolecules = $('#molecule-dropdown option').map(function () {
+          return $(this).val();
+        }).get();
+        if (existingMolecules.includes(moleculeName)) {
+          alert("A molecule with the same name already exists in the database.");
+          return false;
+        }
+        return true;
+      }
+
+      loadMolecules(); // Load molecules on page load
+
+      // Handle molecule selection from dropdown and displays
+      $('#molecule-dropdown').change(function () {
+        var selectedMolecule = $(this).val();
+        var svgUrl = '/' + selectedMolecule + '.svg';
+        var row = '<tr><td>' + selectedMolecule + '</td><td><img src="' + svgUrl + '"></td></tr>';
+        $('#molecule-table tbody').html(row);
+      });
+
+      // Removes selected Molecule from database
+      $('#remove-molecules-button').click(function () {
+        var selectedMolecule = $('#molecule-dropdown').val();
+        $.ajax({
+          url: '/remove-molecule',
+          type: 'DELETE',
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify({ 'name': selectedMolecule }),
+          success: function (response) {
+            if (response.status == 'success')
+              console.log("Test");
+            $('#molecule-dropdown option[value="' + selectedMolecule + '"]').remove();
+            alert(selectedMolecule + " has been removed.")
+            $('#molecule-dropdown').val(''); // Resets dropdown menu
+            $('#molecule-table tbody').empty(); // Clears table
+          },
+          error: function (response) { // For some reason the response is always error despite working
+            $('#molecule-dropdown option[value="' + selectedMolecule + '"]').remove();
+            alert(selectedMolecule + " has been removed.")
+            $('#molecule-dropdown').val(''); // Resets dropdown menu
+            $('#molecule-table tbody').empty(); // Clears table
+          }
+        });
+      });
+
+      // This function validates SDF Files
+      function validateSDFFile(file) {
+        var fileValid = true;
+
+        // regex to check file extension
+        var allowedExtensions = /(\.sdf)$/i;
+        if (!allowedExtensions.exec(file.name)) {
+          alert('Invalid file type. Please select an SDF file.');
+          fileValid = false;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function (event) {
+          var fileContent
+        }
+
+        if (fileValid) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      // This function adds the molecules to database
+      $('form').submit(function (event) {
+        event.preventDefault();
+        if (validateMoleculeName() && validateSDFFile($('#sdf-file')[0].files[0])) {
+          var formData = new FormData($(this)[0]);
+          $.ajax({
+            url: '/sdf-molecules',
+            type: 'POST',
+            data: formData,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+              console.log('Upload successful');
+              var moleculeName = $("#molecule-name").val();
+              loadMolecules();
+              alert(moleculeName + " has been added to the database.");
+            },
+            error: function (data) {
+              console.log('Error uploading file');
+            }
+          });
+        }
+      });
+
+    });
+
+  </script>
+</head>
+
+<body>
+  <h1>Nuno's Molecule Viewer</h1>
+  <form>
+    <label for="molecule-name">Please input the molecule name:</label>
+    <input type="text" id="molecule-name" name="molecule-name"><br>
+    <label for="sdf-file">Select an SDF file to upload:</label>
+    <input type="file" id="sdf-file" name="sdf-file"><br>
+    <button type="submit">Upload</button>
+  </form>
+
+  <label for="molecule-dropdown">Select a molecule to view:</label>
+  <select id="molecule-dropdown">
+    <option value="">- Please select a molecule -</option>
+  </select>
+
+  <button type="button" id="remove-molecules-button">Remove Molecule</button>
+
+  <table id="molecule-table">
+    <thead>
+      <tr>
+        <th>Molecule Name</th>
+        <th>SVG</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+</body>
+
+</html>

@@ -116,7 +116,7 @@ class Database:
         mol = Molecule()
 
         # Call its parse method
-        mol.parse(fp)
+        mol.parse(atom)
 
         # Add entry to Molecules table
         self.conn.execute("INSERT INTO Molecules (NAME) VALUES (?)", [name])
@@ -217,28 +217,29 @@ class Database:
 
         return radial_gradients_str
 
-if __name__ == "__main__":
-    db = Database(reset=False); # or use default
-    MolDisplay.radius = db.radius();
-    MolDisplay.element_name = db.element_name();
-    MolDisplay.header += db.radial_gradients();
-    for molecule in [ 'Water', 'Caffeine', 'Isopentanol' ]:    
-        mol = db.load_mol( molecule );
-        mol.sort();
-        fp = open( molecule + ".svg", "w" );
-        fp.write( mol.svg() );
-        fp.close();
+
+# if __name__ == "__main__":
+#     db = Database(reset=False); # or use default
+#     MolDisplay.radius = db.radius();
+#     MolDisplay.element_name = db.element_name();
+#     MolDisplay.header += db.radial_gradients();
+#     for molecule in [ 'Water', 'Caffeine', 'Isopentanol' ]:    
+#         mol = db.load_mol( molecule );
+#         mol.sort();
+#         fp = open( molecule + ".svg", "w" );
+#         fp.write( mol.svg() );
+#         fp.close();
 
 
         
 # if __name__ == "__main__":
-#     db = Database(reset=True)
+#     db = Database(reset=True) # change to true
 #     db.create_tables()
 #     db['Elements'] = (1, 'H', 'Hydrogen', 'FFFFFF', '050505', '020202', 25)
 #     db['Elements'] = (6, 'C', 'Carbon', '808080', '010101', '000000', 40)
 #     db['Elements'] = (7, 'N', 'Nitrogen', '0000FF', '000005', '000002', 40)
-#     db['Elements'] = (8, 'O', 'Oxygen', 'FF0000', '050000', '020000', 40)
-#     fp = open('water-3D-structure-CT1000292221.sdf')
+#     db['Elements'] = (8, 'O', 'Oxygen', 'FF36400', '060000', '020000', 40)
+# #     fp = open('water-3D-structure-CT1000292221.sdf')
 #     db.add_molecule('Water', fp)
 #     fp = open('caffeine-3D-structure-CT1001987571.sdf')
 #     db.add_molecule('Caffeine', fp)

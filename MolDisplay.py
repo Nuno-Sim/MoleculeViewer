@@ -1,4 +1,5 @@
 import molecule
+# from molsql import Database
 
 # radius = {
 #     'H': 25,
@@ -72,8 +73,7 @@ class Bond:
         # return f' <polygon points="{point1_x:.2f},{point1_y:.2f} {point2_x:.2f},{point2_y:.2f} {point3_x:.2f},{point3_y:.2f} {point4_x:.2f},{point4_y:.2f}" fill="green"/>\n'
         return f' <polygon points="{point4_x:.2f},{point4_y:.2f} {point1_x:.2f},{point1_y:.2f} {point2_x:.2f},{point2_y:.2f} {point3_x:.2f},{point3_y:.2f}" fill="green"/>\n'
 
-
-
+# db = Database('./molecules.db')
 class Molecule(molecule.molecule):
 
     def __str__(self):
@@ -90,11 +90,14 @@ class Molecule(molecule.molecule):
 
             # Reads Atoms
             if len(line) > 7:
+                # print (line[3], float(line[0]),
+                #                  float(line[1]), float(line[2]))
                 self.append_atom(line[3], float(line[0]),
                                  float(line[1]), float(line[2]))
 
             # Reads Bonds
             elif len(line) == 7:
+                # print (int(line[0])-1, int(line[1])-1, int(line[2]))
                 self.append_bond(int(line[0])-1, int(line[1])-1, int(line[2]))
 
     def svg(self):
@@ -127,3 +130,20 @@ class Molecule(molecule.molecule):
         svgString = header + svgString + footer
 
         return svgString
+
+
+# mol = molecule.molecule()  # create a new molecule object
+# # create 3 atoms
+# mol.append_atom("O", 2.5369, -0.1550, 0.0000)
+# mol.append_atom("H", 3.0739, 0.1550, 0.0000)
+# mol.append_atom("H", 2.0000, 0.1550, 0.0000)
+# # caution atom references in append_bond start at 1 NOT 0
+# mol.append_bond(1, 2, 1)
+# mol.append_bond(1, 3, 1)
+# for i in range(3):
+#    atom = mol.get_atom(i)
+#    print(atom.element, atom.x, atom.y, atom.z)
+# for i in range(2):
+#    bond = mol.get_bond(i)
+#    print(bond.a1, bond.a2, bond.epairs, bond.x1, bond.y1, bond.x2, bond.y2,
+#    bond.len, bond.dx, bond.dy)

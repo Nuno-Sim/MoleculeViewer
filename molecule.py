@@ -257,33 +257,8 @@ class molecule(_object):
 
     def sort(self):
         return _molecule.molecule_sort(self)
-
-    def xform(self, xform_matrix):
-        return _molecule.molecule_xform(self, xform_matrix)
 molecule_swigregister = _molecule.molecule_swigregister
 molecule_swigregister(molecule)
-
-class mx_wrapper(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, mx_wrapper, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, mx_wrapper, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["xform_matrix"] = _molecule.mx_wrapper_xform_matrix_set
-    __swig_getmethods__["xform_matrix"] = _molecule.mx_wrapper_xform_matrix_get
-    if _newclass:
-        xform_matrix = _swig_property(_molecule.mx_wrapper_xform_matrix_get, _molecule.mx_wrapper_xform_matrix_set)
-
-    def __init__(self, xrot, yrot, zrot):
-        this = _molecule.new_mx_wrapper(xrot, yrot, zrot)
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-    __swig_destroy__ = _molecule.delete_mx_wrapper
-    __del__ = lambda self: None
-mx_wrapper_swigregister = _molecule.mx_wrapper_swigregister
-mx_wrapper_swigregister(mx_wrapper)
 
 
 def atomset(atom, element, x, y, z):
@@ -326,14 +301,6 @@ def molsort(molecule):
     return _molecule.molsort(molecule)
 molsort = _molecule.molsort
 
-def compute_coords(bond):
-    return _molecule.compute_coords(bond)
-compute_coords = _molecule.compute_coords
-
-def bond_comp(a, b):
-    return _molecule.bond_comp(a, b)
-bond_comp = _molecule.bond_comp
-
 def xrotation(xform_matrix, deg):
     return _molecule.xrotation(xform_matrix, deg)
 xrotation = _molecule.xrotation
@@ -349,44 +316,14 @@ zrotation = _molecule.zrotation
 def mol_xform(molecule, matrix):
     return _molecule.mol_xform(molecule, matrix)
 mol_xform = _molecule.mol_xform
-class rotations(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, rotations, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, rotations, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["x"] = _molecule.rotations_x_set
-    __swig_getmethods__["x"] = _molecule.rotations_x_get
-    if _newclass:
-        x = _swig_property(_molecule.rotations_x_get, _molecule.rotations_x_set)
-    __swig_setmethods__["y"] = _molecule.rotations_y_set
-    __swig_getmethods__["y"] = _molecule.rotations_y_get
-    if _newclass:
-        y = _swig_property(_molecule.rotations_y_get, _molecule.rotations_y_set)
-    __swig_setmethods__["z"] = _molecule.rotations_z_set
-    __swig_getmethods__["z"] = _molecule.rotations_z_get
-    if _newclass:
-        z = _swig_property(_molecule.rotations_z_get, _molecule.rotations_z_set)
 
-    def __init__(self):
-        this = _molecule.new_rotations()
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-    __swig_destroy__ = _molecule.delete_rotations
-    __del__ = lambda self: None
-rotations_swigregister = _molecule.rotations_swigregister
-rotations_swigregister(rotations)
+def compute_coords(bond):
+    return _molecule.compute_coords(bond)
+compute_coords = _molecule.compute_coords
 
-
-def spin(mol):
-    return _molecule.spin(mol)
-spin = _molecule.spin
-
-def rotationsfree(rotations):
-    return _molecule.rotationsfree(rotations)
-rotationsfree = _molecule.rotationsfree
+def bond_comp(a, b):
+    return _molecule.bond_comp(a, b)
+bond_comp = _molecule.bond_comp
 # This file is compatible with both classic and new-style classes.
 
 
